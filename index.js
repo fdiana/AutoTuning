@@ -37,6 +37,7 @@ app.post('/', upload.single('profile-file'), function (req, res, next) {
 
     console.log(req.file.path)
     console.log(req.file.filename)
+    let uploadedFile = req.file.filename;
 
   let runPy = new Promise(function(success, nosuccess) {
 
@@ -72,12 +73,13 @@ app.post('/', upload.single('profile-file'), function (req, res, next) {
       res.end(fromRunpy);
   });
 
-  })
-
   app.post('/generateNumbers', (req, res) => {
 
     var fs = require('fs');
     var obj = JSON.parse(fs.readFileSync('./pythonRes.json', 'utf8'));
+
+    //var fs = require('fs');
+    //var obj = JSON.parse(fs.readFileSync('./pythonRes.json', 'utf8'));
     console.log('obj = ')
     console.log(obj)
     console.log('obj.parameters_size = ')
@@ -89,9 +91,35 @@ app.post('/', upload.single('profile-file'), function (req, res, next) {
       console.log('obj.parameters_value = ')
       console.log(number)
 
-      res.json({numbers});
+      if (number > 10){
+        /*  fs.createReadStream("./uploads/" + uploadedFile, { encoding: "utf-8" })
+             .on("data", (chunk) => {
+               console.log(chunk);
+            })
+             .on("error", (error) => {
+               console.log(error);
+           });*/
+
+           fs.appendFile('./inputParamsUpdated.csv', numbers.toString(), function (err) {
+             if (err) throw err;
+             console.log('Saved!');
+           });
+        }
+        else{
+            res.json({numbers});
+
+        }
+       /*fs.writeFile("./inputParamsUpdated.csv", numbers, "utf-8", (err) => {
+         if (err) console.log(err);
+         else console.log("Data saved");
+       });
+       */
 
   })
+
+
+  })
+
 
 
   app.listen(process.env.PORT || 3000, function(){
