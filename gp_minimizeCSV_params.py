@@ -1,5 +1,7 @@
 import numpy as np
+import json
 from skopt import gp_minimize
+from skopt.space import Real
 
 import csv
 import sys
@@ -23,12 +25,17 @@ y0_gp_minimize = [row[-1] for row in rows]
 y0_gp_minimize_float = [float(ele) for ele in y0_gp_minimize]
 
 
+parameters_size = []
+parameters_size  = len(x0_gp_minimize)
+
+
 def my_function(value):
     result_my_function = 1;
 
     return result_my_function
 
-res = gp_minimize(my_function,                  # the function to minimize
+#  Initialize and run gp_minimize
+result = gp_minimize(my_function,                  # the function to minimize
                   [(-1000.0, 1000.0), (-2000.0, 2000.0)],      # the bounds on each dimension of x
                   acq_func="EI",      # the acquisition function
                   x0=x0_gp_minimize_float,
@@ -38,5 +45,15 @@ res = gp_minimize(my_function,                  # the function to minimize
                   n_initial_points=10,
                   noise=0.1**2,       # the noise level (optional)
                   random_state=1234)   # the random seed
+# Access the results
+best_params = result.x
+best_objective = result.fun
 
-print(res.fun)
+p_obj = {
+  "parameters_size": parameters_size,
+  "parameters_value": result.x
+}
+
+
+with open('pythonRes.json', 'w') as outfile:
+    json.dump(p_obj, outfile)

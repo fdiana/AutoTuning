@@ -6,9 +6,27 @@
   <title>Read JSON File </title>
   <style>
     video{background: color:red ;}
+
+    table {
+          border-collapse: collapse;
+          width: 50%;
+          margin-top: 20px;
+      }
+
+      table, th, td {
+          border: 1px solid black;
+      }
+
+      th, td {
+          padding: 10px;
+          text-align: center;
+      }
+
   </style>
 </head>
+
 <body>
+
   <form method="POST" action="/" enctype="multipart/form-data">
         <div>
             <label>Upload a csv file</label>
@@ -19,41 +37,45 @@
             <input type="submit" value="Upload" />
         </div>
     </form>
-</body>
+
+
+    <label for="numberInput">Enter a Number:</label>
+      <input type="number" id="numberInput" min="1" value="1">
+      <button onclick="fetchAndDisplayNumbers()">Add Columns</button>
+
+      <table id="myTable">
+          <!-- Table will be dynamically populated -->
+      </table>
 
 
 <script>
-//var csv is the CSV file with headers
-function csvJSON(csv){
 
-  var lines=csv.split("\n");
+function fetchAndDisplayNumbers() {
+            const numberInput = document.getElementById("numberInput").value;
 
-  var result = [];
+            fetch('/generateNumbers', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ number: numberInput }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                const table = document.getElementById("myTable");
+                table.innerHTML = ""; // Clear existing content
+                const headerRow = table.insertRow();
+                data.numbers.forEach(number => {
+                    const cell = headerRow.insertCell();
+                    cell.innerHTML = `${number}`;
+                });
 
-  // NOTE: If your columns contain commas in their values, you'll need
-  // to deal with those before doing the next step
-  // (you might convert them to &&& or something, then covert them back later)
-  // jsfiddle showing the issue https://jsfiddle.net/
-  var headers=lines[0].split(",");
-
-  for(var i=1;i<lines.length;i++){
-
-      var obj = {};
-      var currentline=lines[i].split(",");
-
-      for(var j=0;j<headers.length;j++){
-          obj[headers[j]] = currentline[j];
-      }
-
-      result.push(obj);
-
-  }
-
-  //return result; //JavaScript object
-  return JSON.stringify(result); //JSON
-}
+                table.insertRow();
+            })
+            .catch(error => console.error('Error:', error));
+        }
 
 </script>
-
+</body>
 
 </html>
