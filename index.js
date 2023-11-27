@@ -72,6 +72,8 @@ app.post('/', upload.single('profile-file'), function (req, res, next) {
       res.end(fromRunpy);
   });
 
+  })
+
   app.post('/generateNumbers', (req, res) => {
 
     var fs = require('fs');
@@ -82,14 +84,14 @@ app.post('/', upload.single('profile-file'), function (req, res, next) {
     console.log(obj.parameters_size)
     //console.log(req.body)
 
-      const { number } = obj.parameters_size;
-      const row = obj.parameters_value;
-      res.json({ row });
+      const number = obj.parameters_size;
+      const numbers = obj.parameters_value;
+      console.log('obj.parameters_value = ')
+      console.log(number)
 
-  });
+      res.json({numbers});
 
   })
-
 
 
   app.listen(process.env.PORT || 3000, function(){
